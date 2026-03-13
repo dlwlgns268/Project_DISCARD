@@ -214,10 +214,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 772349ac5afc60147b1da4d97f4016c4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMover2D
-  moveSpeed: 7
+  moveSpeed: 12
   rb: {fileID: 208749654}
   spriteRenderer: {fileID: 208749657}
-  playerDash: {fileID: 0}
+  playerDash: {fileID: 208749660}
 --- !u!61 &208749656
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -353,7 +353,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Jump
   rb: {fileID: 208749654}
-  jumpForce: 12
+  jumpForce: 15
   fallMultiplier: 2.5
   lowJumpMultiplier: 2
   groundLayer:
@@ -374,9 +374,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Dash
   rb: {fileID: 208749654}
-  dashForce: 15
+  dashForce: 37.5
   dashDuration: 0.2
-  dashCooldown: 3
+  dashCooldown: 1
 --- !u!114 &208749661
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1317,7 +1317,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::VERN_COIL
   enemyHp: 75
   atkPower: 10
-  moveSpeed: 5
+  moveSpeed: 9
   executionThreshold: 1
   isSpawned: 0
   atkRange: 1.5
