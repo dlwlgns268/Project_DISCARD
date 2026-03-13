@@ -1,12 +1,10 @@
-using System;
 using UnityEngine;
 
-namespace GameLogic
+namespace GameLogic.Entity.Player
 {
     public class Execution : MonoBehaviour
     {
         public GameObject Target { get; private set; }
-        public GameObject temp;
         public LineRenderer executionLine;
 
         public void FixedUpdate()
@@ -26,7 +24,8 @@ namespace GameLogic
 
         private GameObject GetNearestExecutionTarget()
         {
-            return temp;
+            var e = FindObjectsByType<Enemy>(FindObjectsSortMode.None);
+            return e[0].gameObject;
         }
     }
 }

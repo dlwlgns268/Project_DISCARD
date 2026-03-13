@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class VERN_COIL : MeleeEnemy
+public class VernCoil : MeleeEnemy
 {
     [SerializeField] private Rigidbody2D rb;
     [SerializeField] private EnemyAttackHitbox attackHitbox;
