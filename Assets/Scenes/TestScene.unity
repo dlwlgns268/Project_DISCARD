@@ -217,7 +217,7 @@ MonoBehaviour:
   moveSpeed: 7
   rb: {fileID: 208749654}
   spriteRenderer: {fileID: 208749657}
-  playerDash: {fileID: 208749660}
+  playerDash: {fileID: 0}
 --- !u!61 &208749656
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -337,6 +337,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1348078837}
+  - {fileID: 942606402}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &208749659
@@ -352,12 +353,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Jump
   rb: {fileID: 208749654}
-  jumpForce: 7
+  jumpForce: 12
   fallMultiplier: 2.5
   lowJumpMultiplier: 2
   groundLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 256
   groundCheck: {fileID: 1348078837}
   groundCheckBoxSize: {x: 0.5, y: 0.1}
 --- !u!114 &208749660
@@ -422,7 +423,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dfa0f7330b370c1419c449eec7aca3af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameLogic.Entity.Player.Execution
-  temp: {fileID: 0}
   executionLine: {fileID: 942606401}
 --- !u!1 &602720111
 GameObject:
@@ -526,7 +526,7 @@ GameObject:
   - component: {fileID: 708459371}
   - component: {fileID: 708459370}
   - component: {fileID: 708459369}
-  m_Layer: 3
+  m_Layer: 8
   m_Name: Square (1)
   m_TagString: Ground
   m_Icon: {fileID: 0}
@@ -836,7 +836,7 @@ GameObject:
   - component: {fileID: 942606402}
   - component: {fileID: 942606401}
   m_Layer: 0
-  m_Name: Line
+  m_Name: ExecutionLine
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -889,7 +889,7 @@ LineRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: -1
   m_MaskInteraction: 0
   m_Positions:
   - {x: 0, y: 0, z: 0}
@@ -916,7 +916,7 @@ LineRenderer:
       serializedVersion: 2
       key0: {r: 1, g: 0.3443396, b: 0.3443396, a: 1}
       key1: {r: 0.7735849, g: 0.09852261, b: 0.09852261, a: 1}
-      key2: {r: 0, g: 0, b: 0, a: 0}
+      key2: {r: 0, g: 0, b: 0, a: 1}
       key3: {r: 0, g: 0, b: 0, a: 0}
       key4: {r: 0, g: 0, b: 0, a: 0}
       key5: {r: 0, g: 0, b: 0, a: 0}
@@ -931,8 +931,8 @@ LineRenderer:
       ctime6: 0
       ctime7: 0
       atime0: 0
-      atime1: 42405
-      atime2: 50115
+      atime1: 65535
+      atime2: 65535
       atime3: 0
       atime4: 0
       atime5: 0
@@ -941,15 +941,15 @@ LineRenderer:
       m_Mode: 0
       m_ColorSpace: 0
       m_NumColorKeys: 2
-      m_NumAlphaKeys: 3
-    numCornerVertices: 0
-    numCapVertices: 0
+      m_NumAlphaKeys: 2
+    numCornerVertices: 90
+    numCapVertices: 90
     alignment: 0
     textureMode: 1
     textureScale: {x: 4, y: 1}
     shadowBias: 0.5
     generateLightingData: 0
-  m_UseWorldSpace: 0
+  m_UseWorldSpace: 1
   m_Loop: 0
   m_ApplyActiveColorSpace: 1
 --- !u!4 &942606402
@@ -960,12 +960,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 942606400}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -0.103999995, y: 0.542, z: 0}
+  m_LocalScale: {x: 0.2, y: 0.2, z: 0.5}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 208749658}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1348078836
 GameObject:
@@ -1318,7 +1318,7 @@ MonoBehaviour:
   enemyHp: 75
   atkPower: 10
   moveSpeed: 5
-  executionThreshold: 0.5
+  executionThreshold: 1
   isSpawned: 0
   atkRange: 1.5
   atkDelay: 1
@@ -1334,4 +1334,3 @@ SceneRoots:
   - {fileID: 708459371}
   - {fileID: 1947648682}
   - {fileID: 824548086}
-  - {fileID: 942606402}
