@@ -26,9 +26,15 @@ public class EnemyAttackHitbox : MonoBehaviour
         if (!_isActive) return;
         if (!other.CompareTag("Player")) return;
         if (_hitTargets.Contains(other)) return;
-
+        
+        Debug.Log("Hit!");
+        
         _hitTargets.Add(other);
 
-        //TODO other.GetComponent<플레이어 체력 스크립트>().TakeDamage(_damage);
+        /*TODO PlayerHealth playerHealth = other.GetComponent<PlayerHealth>();
+        if (playerHealth != null)
+        {
+            playerHealth.TakeDamage(_damage);
+        }*/
     }
 }

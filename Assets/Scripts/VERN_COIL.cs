@@ -47,10 +47,6 @@ public class VERN_COIL : MeleeEnemy
     
     public void EnableAttackHitbox()
     {
-        Vector3 localPos = attackPoint.localPosition;
-        localPos.x = Mathf.Abs(localPos.x) * (_facingRight ? 1f : -1f);
-        attackPoint.localPosition = localPos;
-
         attackHitbox.transform.position = attackPoint.position;
         attackHitbox.Activate(atkPower);
     }
@@ -63,9 +59,9 @@ public class VERN_COIL : MeleeEnemy
     private void UpdateFacing(float diffX)
     {
         if (diffX > 0.05f)
-            _facingRight = true;
-        else if (diffX < -0.05f)
             _facingRight = false;
+        else if (diffX < -0.05f)
+            _facingRight = true;
 
         Vector3 scale = transform.localScale;
         scale.x = Mathf.Abs(scale.x) * (_facingRight ? 1f : -1f);
