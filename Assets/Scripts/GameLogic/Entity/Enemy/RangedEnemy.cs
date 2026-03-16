@@ -2,8 +2,8 @@ using UnityEngine;
 
 public abstract class RangedEnemy : Enemy
 {
-    [SerializeField] protected float attackRange = 6f;
-    [SerializeField] protected float attackDelay = 1.5f;
+    [SerializeField] protected float attackRange = 12f;
+    [SerializeField] protected float attackDelay = 2f;
     [SerializeField] protected Transform firePoint;
     [SerializeField] protected EnemyProjectile projectilePrefab;
 
@@ -15,7 +15,7 @@ public abstract class RangedEnemy : Enemy
             CurrentAttackDelay -= Time.fixedDeltaTime;
     }
 
-    protected bool CanAttack()
+    protected bool CanAtk()
     {
         return CurrentAttackDelay <= 0f;
     }
