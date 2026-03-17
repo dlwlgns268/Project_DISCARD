@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -8,15 +9,18 @@ namespace GameLogic.Entity.Player
     {
         public Enemy[] Target { get; private set; }
         public LineRenderer executionLine;
+        public ParticleSystem executionEffect;
+        private bool IsExecuting { get; set; }
 
         public void FixedUpdate()
         {
+            if (IsExecuting) return;
             Target = GetNearestExecutionTarget();
             executionLine.enabled = Target.Length > 0;
             if (Target.Length <= 0) return;
             var direction = Target[0].transform.position - transform.position;
             executionLine.positionCount = Target.Length + 1;
-            executionLine.SetPosition(0, transform.position + direction.normalized * 0.5f);
+            executionLine.SetPosition(0, transform.position + direction.normalized * Mathf.Lerp(0f, 0.25f, Time.time * 5 % 1));
             for (var i = 0; i < Target.Length; i++) executionLine.SetPosition(i + 1, Target[i].transform.position);
         }
 
@@ -29,22 +33,27 @@ namespace GameLogic.Entity.Player
         
         public void Execute()
         {
-            switch (Target.Length)
+            StartCoroutine(ExecuteFlow());
+        }
+
+        private IEnumerator ExecuteFlow()
+        {
+            if (Target.Length <= 0) yield break;
+            // 가능하면 무적 코드 추가할 것
+            IsExecuting = true;
+            foreach (var o in Target)
             {
-                case 0:
-                    return;
-                case 1:
-                    var o = Target[0];
-                    var dir = o.transform.position - transform.position;
-                    transform.position = o.transform.position + dir.normalized;
-                    Destroy(o.gameObject); // 나중에 비활성화 코드로 바꿀 것
-                    break;
-                default:
-                    var d = Target[^1].transform.position - Target[^2].transform.position;
-                    transform.position = Target[^1].transform.position + d.normalized;
-                    foreach (var i in Target) Destroy(i.gameObject); // 나중에 비활성화 코드로 바꿀 것
-                    break;
+                var p = Instantiate(executionEffect, transform.position, Quaternion.identity);
+                p.transform.LookAt(o.transform.position);
+                var main = p.main;
+                main.startSpeed = (o.transform.position - transform.position).magnitude * 6.7f;
+                p.Play();
+                transform.position = o.transform.position;
+                o.Execute();
+                yield return new WaitForSeconds(0.1f);
             }
+            IsExecuting = false;
+            // 무적 해제
         }
 
         private Enemy[] GetNearestExecutionTarget()
