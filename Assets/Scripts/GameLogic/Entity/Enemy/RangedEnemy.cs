@@ -33,10 +33,15 @@ public abstract class RangedEnemy : Enemy
 
     protected virtual void FireProjectile()
     {
-        if (projectilePrefab == null || firePoint == null || Target == null)
+        if (!projectilePrefab || !firePoint || !Target)
             return;
 
-        EnemyProjectile projectile = Instantiate(projectilePrefab, firePoint.position, Quaternion.identity);
+        EnemyProjectile projectile = ObjectPoolManager.Instance.Spawn<EnemyProjectile>(
+            projectilePrefab,
+            firePoint.position,
+            Quaternion.identity
+        );
+
         projectile.Initialize(Target.position - firePoint.position, atkPower);
     }
 }
