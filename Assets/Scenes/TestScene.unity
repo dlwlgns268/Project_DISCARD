@@ -1486,7 +1486,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::VernDrone
   enemyHp: 75
-  atkPower: 1
+  atkPower: 10
   moveSpeed: 15
   executionThreshold: 1
   isSpawned: 1
