@@ -10,7 +10,7 @@ public abstract class Enemy : MonoBehaviour
     [SerializeField] [Range(0f, 1f)] protected float executionThreshold = 0.5f;
     
     protected Transform Target;
-    protected float CurrentEnemyHp;
+    [SerializeField] protected float CurrentEnemyHp;
 
     public bool isSpawned = false;
 
