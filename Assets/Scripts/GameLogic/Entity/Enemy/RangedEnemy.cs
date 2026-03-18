@@ -2,8 +2,8 @@ using UnityEngine;
 
 public abstract class RangedEnemy : Enemy
 {
-    [SerializeField] protected float attackRange = 6f;
-    [SerializeField] protected float attackDelay = 1.5f;
+    [SerializeField] protected float attackRange = 12f;
+    [SerializeField] protected float attackDelay = 2f;
     [SerializeField] protected Transform firePoint;
     [SerializeField] protected EnemyProjectile projectilePrefab;
 
@@ -15,7 +15,7 @@ public abstract class RangedEnemy : Enemy
             CurrentAttackDelay -= Time.fixedDeltaTime;
     }
 
-    protected bool CanAttack()
+    protected bool CanAtk()
     {
         return CurrentAttackDelay <= 0f;
     }
@@ -33,10 +33,15 @@ public abstract class RangedEnemy : Enemy
 
     protected virtual void FireProjectile()
     {
-        if (projectilePrefab == null || firePoint == null || Target == null)
+        if (!projectilePrefab || !firePoint || !Target)
             return;
 
-        EnemyProjectile projectile = Instantiate(projectilePrefab, firePoint.position, Quaternion.identity);
+        EnemyProjectile projectile = ObjectPoolManager.Instance.Spawn<EnemyProjectile>(
+            projectilePrefab,
+            firePoint.position,
+            Quaternion.identity
+        );
+
         projectile.Initialize(Target.position - firePoint.position, atkPower);
     }
 }

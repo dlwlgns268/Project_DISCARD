@@ -6,16 +6,22 @@ namespace Entity.Player
     [RequireComponent(typeof(Rigidbody2D))]
     public class PlayerJump : MonoBehaviour
     {
-        [SerializeField] private Rigidbody2D rb;
-        [SerializeField] private float jumpForce = 7f;
-        [SerializeField] private float fallMultiplier = 2.5f;
-        [SerializeField] private float lowJumpMultiplier = 2f;
         [SerializeField] private LayerMask groundLayer;
         [SerializeField] private Transform groundCheck;
-        [SerializeField] private Vector2 groundCheckBoxSize = new Vector2(0.5f, 0.1f);
-    
+
+        private Rigidbody2D rb;
         private bool _isGrounded;
         private bool _jumpRequested;
+
+        private const float JumpForce = 15f;
+        private const float FallMultiplier = 2.5f;
+        private const float LowJumpMultiplier = 2f;
+        private static readonly Vector2 GroundCheckBoxSize = new Vector2(0.5f, 0.1f);
+
+        private void Awake()
+        {
+            rb = GetComponent<Rigidbody2D>();
+        }
 
         public void OnJump(InputValue value)
         {
@@ -27,7 +33,7 @@ namespace Entity.Player
 
         private void Update()
         {
-            _isGrounded = Physics2D.OverlapBox(groundCheck.position, groundCheckBoxSize, 0f, groundLayer);
+            _isGrounded = Physics2D.OverlapBox(groundCheck.position, GroundCheckBoxSize, 0f, groundLayer);
         
             if (_jumpRequested && !_isGrounded && rb.linearVelocity.y < 0)
             {
@@ -39,7 +45,7 @@ namespace Entity.Player
         {
             if (_jumpRequested && _isGrounded)
             {
-                rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
+                rb.linearVelocity = new Vector2(rb.linearVelocity.x, JumpForce);
                 _jumpRequested = false;
             }
         }
@@ -49,7 +55,7 @@ namespace Entity.Player
             if (groundCheck != null)
             {
                 Gizmos.color = Color.red;
-                Gizmos.DrawWireCube(groundCheck.position, groundCheckBoxSize);
+                Gizmos.DrawWireCube(groundCheck.position, GroundCheckBoxSize);
             }
         }
     }
