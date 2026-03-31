@@ -641,7 +641,7 @@ MonoBehaviour:
   enemyHp: 150
   atkPower: 20
   moveSpeed: 0
-  executionThreshold: 1
+  executionThreshold: 0.5
   CurrentEnemyHp: 0
   isSpawned: 1
   attackRange: 15
@@ -1579,7 +1579,7 @@ MonoBehaviour:
   enemyHp: 75
   atkPower: 10
   moveSpeed: 9
-  executionThreshold: 1
+  executionThreshold: 0.5
   CurrentEnemyHp: 0
   isSpawned: 0
   atkRange: 1.5
@@ -1695,7 +1695,7 @@ MonoBehaviour:
   enemyHp: 75
   atkPower: 10
   moveSpeed: 15
-  executionThreshold: 1
+  executionThreshold: 0.5
   CurrentEnemyHp: 0
   isSpawned: 1
   attackRange: 8
