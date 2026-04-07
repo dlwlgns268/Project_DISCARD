@@ -14,22 +14,21 @@ namespace GameLogic.Entity.Player
 
         public void FixedUpdate()
         {
+            if (Player.Instance.playerInputManager.AttackRequest)
+            {
+                Player.Instance.playerInputManager.AttackRequest = false;
+                Execute();
+            }
             if (IsExecuting) return;
             Target = GetNearestExecutionTarget();
             executionLine.enabled = Target.Length > 0;
             if (Target.Length <= 0) return;
-            var direction = Target[0].transform.position - transform.position;
+            var localPos = Player.Instance.spriteRenderer.bounds.center;
+            var direction = Target[0].transform.position - localPos;
             executionLine.positionCount = Target.Length + 1;
-            executionLine.SetPosition(0, transform.position + direction.normalized * Mathf.Lerp(0f, 0.25f, Time.time * 5 % 1));
+            executionLine.SetPosition(0, localPos + direction.normalized * Mathf.Lerp(0f, 0.25f, Time.time * 5 % 1));
             for (var i = 0; i < Target.Length; i++) executionLine.SetPosition(i + 1, Target[i].transform.position);
         }
-
-#if UNITY_EDITOR // 테스트용 코드
-        public void OnAttack(InputValue value)
-        {
-            if (value.isPressed) Execute();
-        }
-#endif
         
         public void Execute()
         {
@@ -39,21 +38,28 @@ namespace GameLogic.Entity.Player
         private IEnumerator ExecuteFlow()
         {
             if (Target.Length <= 0) yield break;
-            // 가능하면 무적 코드 추가할 것
+            Player.Instance.playerDash.IsInvincible = true;
+            var gravity = Player.Instance.rb.gravityScale;
+            Player.Instance.rb.gravityScale = 0;
+            Player.Instance.rb.linearVelocity = Vector2.zero;
+            Player.Instance.selfCollider.enabled = false;
             IsExecuting = true;
             foreach (var o in Target)
             {
-                var p = Instantiate(executionEffect, transform.position, Quaternion.identity);
+                var localPos = Player.Instance.spriteRenderer.bounds.center;
+                var p = Instantiate(executionEffect, localPos, Quaternion.identity);
                 p.transform.LookAt(o.transform.position);
                 var main = p.main;
-                main.startSpeed = (o.transform.position - transform.position).magnitude * 6.7f;
+                main.startSpeed = (o.transform.position - localPos).magnitude * 6.7f;
                 p.Play();
                 transform.position = o.transform.position;
                 o.Execute();
                 yield return new WaitForSeconds(0.1f);
             }
             IsExecuting = false;
-            // 무적 해제
+            Player.Instance.rb.gravityScale = gravity;
+            Player.Instance.selfCollider.enabled = true;
+            Player.Instance.playerDash.IsInvincible = false;
         }
 
         private Enemy[] GetNearestExecutionTarget()

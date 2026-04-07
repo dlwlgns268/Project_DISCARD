@@ -61,7 +61,7 @@ Material:
     - _ZWrite: 0
     m_Colors:
     - White: {r: 1, g: 1, b: 1, a: 1}
-    - _Color: {r: 47.937256, g: 2.5098033, b: 2.5098033, a: 1}
+    - _Color: {r: 55.61988, g: 2.0384247, b: 2.0384247, a: 1}
     - _RendererColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

@@ -1,173 +1,119 @@
 using System.Collections;
+using System.Linq;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
-namespace Entity.Player
+namespace GameLogic.Entity.Player
 {
-    [RequireComponent(typeof(Rigidbody2D))]
     public class PlayerDash : MonoBehaviour
     {
-        [Header("References")]
-        [SerializeField] private Rigidbody2D rb;
-        [SerializeField] private SpriteRenderer spriteRenderer;
-        [SerializeField] private Collider2D strongDashAttackCollider;
-        [SerializeField] private StrongDashHitbox strongDashHitbox;
+        private static readonly int Thickness = Shader.PropertyToID("_Thickness");
+        [SerializeField] private DashHitbox dashHitbox;
+        [SerializeField] private SpriteRenderer targetIndicator;
+        [SerializeField] private Material playerOutlineMaterial;
 
-        [Header("Normal Dash")]
-        private readonly float _dashForce = 37.5f;
-        private readonly float _dashDuration = 0.2f;
-        private readonly float _dashCooldown = 1f;
-
-        [Header("Strong Dash")]
         [SerializeField] private float strongDashForce = 37.5f;
         [SerializeField] private float strongDashDuration = 0.2f;
         [SerializeField] private float strongDashChargeTime = 3f;
 
+        private const float DashForce = 37.5f;
+        private const float DashDuration = 0.2f;
+
         public bool IsDashing { get; private set; }
-        public bool IsInvincible { get; private set; }
-        public bool IsStrongDashReady => Time.time >= _lastStrongDashTime + strongDashChargeTime;
+        public bool IsInvincible { get; set; }
+        public bool IsStrongDashReady => StrongDashCount >= 2;
 
-        private bool _dashRequested;
-        private float _dashYPosition;
-        private float _lastStrongDashTime = -999f;
-        private Vector2 _moveInput;
         private Coroutine _dashCoroutine;
-        private float _nextDashAvailableTime = -999f;
-        private WaitForFixedUpdate _waitForFixed;
+        private float _originalGravityScale;
 
-        public void OnMove(InputValue value)
-        {
-            _moveInput = value.Get<Vector2>();
-        }
-
-        public void OnDash(InputValue value)
-        {
-            if (value.isPressed && !IsDashing && Time.time >= _nextDashAvailableTime)
-            {
-                _dashRequested = true;
-            }
-        }
+        public bool IsDashAvailable { get; set; }
+        public int StrongDashCount { get; set; }
 
         private void Awake()
         {
-            if (!rb)
-            {
-                rb = GetComponent<Rigidbody2D>();
-            }
-
-            if (!spriteRenderer)
-            {
-                spriteRenderer = GetComponent<SpriteRenderer>();
-            }
-
-            if (strongDashHitbox == null && strongDashAttackCollider != null)
-            {
-                strongDashHitbox = strongDashAttackCollider.GetComponent<StrongDashHitbox>();
-            }
-
-            _waitForFixed = new WaitForFixedUpdate();
-            DisableStrongDashAttack();
+            dashHitbox.selfCollider.enabled = false;
         }
 
         private void Update()
         {
-            if (_dashRequested)
+            playerOutlineMaterial.SetFloat(Thickness, IsStrongDashReady ? 1 : 0);
+            if (IsStrongDashReady)
             {
-                _dashRequested = false;
-
-                if (_dashCoroutine != null)
-                {
-                    StopCoroutine(_dashCoroutine);
-                }
-
-                _dashCoroutine = StartCoroutine(DashCoroutine());
+                var target = GetNearestNonExecutionTarget();
+                targetIndicator.gameObject.SetActive(target.Length > 0);
+                if (target.Length <= 0) goto label;
+                targetIndicator.transform.position = target[0].transform.position;
             }
+            else
+            {
+                targetIndicator.gameObject.SetActive(false);
+            }
+
+            label:
+            if (Player.Instance.playerJump.IsGrounded && !IsDashing) IsDashAvailable = true;
+            if (!Player.Instance.playerInputManager.DashRequest) return;
+            Player.Instance.playerInputManager.DashRequest = false;
+            if (!IsDashAvailable) return;
+            IsDashAvailable = false;
+            if (_dashCoroutine != null)
+            {
+                var rb = Player.Instance.rb;
+                rb.gravityScale = _originalGravityScale;
+                rb.linearVelocity *= 0.1f;
+                StopCoroutine(_dashCoroutine);
+            }
+
+            _dashCoroutine = StartCoroutine(DashCoroutine());
         }
 
         private IEnumerator DashCoroutine()
         {
             IsDashing = true;
 
-            float currentTime = Time.time;
-            _nextDashAvailableTime = currentTime + _dashCooldown;
+            var useStrongDash = IsStrongDashReady;
+            dashHitbox.IsStrongDash = useStrongDash;
 
-            bool useStrongDash = IsStrongDashReady;
-
-            float currentDashForce = useStrongDash ? strongDashForce : _dashForce;
-            float currentDashDuration = useStrongDash ? strongDashDuration : _dashDuration;
+            var currentDashForce = useStrongDash ? strongDashForce : DashForce;
+            var currentDashDuration = useStrongDash ? strongDashDuration : DashDuration;
 
             if (useStrongDash)
             {
-                _lastStrongDashTime = currentTime;
+                StrongDashCount = 0;
                 IsInvincible = true;
-
-                if (strongDashHitbox)
-                {
-                    strongDashHitbox.ResetHitTargets();
-                }
-
-                if (strongDashAttackCollider)
-                {
-                    strongDashAttackCollider.enabled = true;
-                }
             }
 
-            float originalGravityScale = rb.gravityScale;
+            dashHitbox.ResetHitTargets();
+            dashHitbox.selfCollider.enabled = true;
+
+            var rb = Player.Instance.rb;
+            _originalGravityScale = rb.gravityScale;
             rb.gravityScale = 0f;
 
-            _dashYPosition = transform.position.y;
-            float dashDirection = GetDashDirection();
+            var dashDirection = GetDashDirection(useStrongDash);
+            rb.linearVelocity = dashDirection * currentDashForce;
 
-            rb.linearVelocity = new Vector2(dashDirection * currentDashForce, 0f);
+            yield return new WaitForSeconds(currentDashDuration);
 
-            float elapsed = 0f;
+            rb.gravityScale = _originalGravityScale;
+            rb.linearVelocity *= 0.3f;
 
-            while (elapsed < currentDashDuration)
-            {
-                Vector3 currentPos = transform.position;
-                currentPos.y = _dashYPosition;
-                transform.position = currentPos;
-
-                rb.linearVelocityY = 0f;
-
-                elapsed += Time.fixedDeltaTime;
-                yield return _waitForFixed;
-            }
-
-            rb.gravityScale = originalGravityScale;
-            rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
-
-            if (useStrongDash)
-            {
-                DisableStrongDashAttack();
-                IsInvincible = false;
-            }
+            if (useStrongDash) IsInvincible = false;
+            dashHitbox.selfCollider.enabled = false;
 
             IsDashing = false;
             _dashCoroutine = null;
         }
 
-        private float GetDashDirection()
+        private Vector2 GetDashDirection(bool isStrongDash)
         {
-            if (Mathf.Abs(_moveInput.x) > 0.01f)
-            {
-                return Mathf.Sign(_moveInput.x);
-            }
+            var moveInput = Player.Instance.playerInputManager.MoveInput;
+            var enemy = GetNearestNonExecutionTarget();
+            if (!isStrongDash || enemy.Length <= 0)
+                return Mathf.Abs(moveInput.magnitude) > 0.01f
+                    ? moveInput.normalized
+                    : new Vector2(Player.Instance.spriteRenderer.flipX ? -1f : 1f, 0);
 
-            if (spriteRenderer)
-            {
-                return spriteRenderer.flipX ? -1f : 1f;
-            }
-
-            return transform.localScale.x >= 0f ? 1f : -1f;
-        }
-
-        private void DisableStrongDashAttack()
-        {
-            if (strongDashAttackCollider)
-            {
-                strongDashAttackCollider.enabled = false;
-            }
+            var dir = enemy[0].transform.position - Player.Instance.spriteRenderer.bounds.center;
+            return (dir / 7.5f).magnitude >= 1f ? dir / 7.5f + dir.normalized / 10f : dir.normalized * 1.1f;
         }
 
         private void OnDisable()
@@ -178,9 +124,59 @@ namespace Entity.Player
                 _dashCoroutine = null;
             }
 
-            DisableStrongDashAttack();
+            dashHitbox.selfCollider.enabled = false;
             IsInvincible = false;
             IsDashing = false;
+        }
+
+        private Enemy[] GetNearestNonExecutionTarget()
+        {
+            var moveInput = Player.Instance.playerInputManager.MoveInput;
+            var direction = Mathf.Abs(moveInput.magnitude) > 0.01f
+                ? moveInput.normalized
+                : new Vector2(Player.Instance.spriteRenderer.flipX ? -1f : 1f, 0);
+
+            var e = FindObjectsByType<Enemy>(FindObjectsSortMode.None);
+            return e.Where(x => !x.IsExecutable)
+                .Where(x =>
+                {
+                    var toEnemy = (x.transform.position - Player.Instance.spriteRenderer.bounds.center).normalized;
+                    var angle = Vector2.Angle(direction, toEnemy);
+                    return angle <= 45f;
+                })
+                .OrderBy(x => Vector3.Distance(x.transform.position, transform.position))
+                .ToArray();
+        }
+
+        private void OnDrawGizmos()
+        {
+            if (!Application.isPlaying || !IsStrongDashReady) return;
+
+            var moveInput = Player.Instance.playerInputManager.MoveInput;
+            var direction = Mathf.Abs(moveInput.magnitude) > 0.01f
+                ? moveInput.normalized
+                : new Vector2(Player.Instance.spriteRenderer.flipX ? -1f : 1f, 0);
+
+            var origin = Player.Instance.spriteRenderer.bounds.center;
+
+            Gizmos.color = Color.yellow;
+
+            const float coneAngle = 45f;
+            const int segments = 1;
+            const float angleStep = coneAngle * 2f / segments;
+            var baseAngle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+
+            for (var i = 0; i <= segments; i++)
+            {
+                var angle = (baseAngle - coneAngle + angleStep * i) * Mathf.Deg2Rad;
+                var coneDir = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0f);
+                Gizmos.DrawRay(origin, coneDir * 7f);
+            }
+
+            var enemy = GetNearestNonExecutionTarget();
+            if (enemy.Length <= 0) return;
+            Gizmos.color = Color.red;
+            Gizmos.DrawLine(origin, enemy[0].transform.position);
         }
     }
 }

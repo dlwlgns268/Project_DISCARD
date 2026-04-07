@@ -1,4 +1,4 @@
-using Entity.Player;
+using GameLogic.Entity.Player;
 using UnityEngine;
 using UnityEngine.Serialization;
 
