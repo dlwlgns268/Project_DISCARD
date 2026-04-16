@@ -7,7 +7,7 @@ namespace GameLogic.Entity.Player
 {
     public class Execution : MonoBehaviour
     {
-        public Enemy[] Target { get; private set; }
+        public Enemy.Enemy[] Target { get; private set; }
         public LineRenderer executionLine;
         public ParticleSystem executionEffect;
         private bool IsExecuting { get; set; }
@@ -62,9 +62,9 @@ namespace GameLogic.Entity.Player
             Player.Instance.playerDash.IsInvincible = false;
         }
 
-        private Enemy[] GetNearestExecutionTarget()
+        private Enemy.Enemy[] GetNearestExecutionTarget()
         {
-            var e = FindObjectsByType<Enemy>(FindObjectsSortMode.None);
+            var e = FindObjectsByType<Enemy.Enemy>(FindObjectsSortMode.None);
             return e.Where(x => x.IsExecutable).OrderBy(x => Vector3.Distance(x.transform.position, transform.position)).ToArray();
         }
     }

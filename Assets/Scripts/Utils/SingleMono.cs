@@ -4,6 +4,7 @@ namespace Utils
 {
     public class SingleMono<T> : MonoBehaviour where T : MonoBehaviour
     {
+        public bool destroyOnLoad = true;
         private static T _instance;
 
         public static T Instance
@@ -11,19 +12,18 @@ namespace Utils
             get
             {
                 if (!_instance) _instance = FindAnyObjectByType<T>();
-                if (!_instance) _instance = new GameObject().AddComponent<T>();
                 return _instance;
             }
         }
         
-        private void Awake()
+        public virtual void Awake()
         {
             if (_instance)
             {
                 Destroy(gameObject);
                 return;
             }
-            DontDestroyOnLoad(gameObject);
+            if (!destroyOnLoad) DontDestroyOnLoad(gameObject);
             _instance = this as T;
         }
     }

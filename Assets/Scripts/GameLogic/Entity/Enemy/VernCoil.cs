@@ -1,70 +1,56 @@
 using UnityEngine;
 
-public class VernCoil : MeleeEnemy
+namespace GameLogic.Entity.Enemy
 {
-    [SerializeField] private Rigidbody2D rb;
-    [SerializeField] private EnemyAttackHitbox attackHitbox;
-    [SerializeField] private Transform attackPoint;
-    private bool _facingRight = true;
-
-    protected override void Start()
+    public class VernCoil : MeleeEnemy
     {
-        base.Start();
-    }
+        [SerializeField] private Rigidbody2D rb;
+        [SerializeField] private BoxCollider2D attackPoint;
+        private bool _facingRight = true;
 
-    protected override void FixedUpdate()
-    {
-        base.FixedUpdate();
-
-        if (!isSpawned || !Target)
-            return;
-        
-        float diffX = Target.position.x - transform.position.x;
-        UpdateFacing(diffX);
-
-        if (IsTargetInRange())
+        protected override void FixedUpdate()
         {
-            rb.linearVelocityX = 0f;
+            base.FixedUpdate();
+            if (!isSpawned || !target) return;
 
-            if (CanAtk())
-                Atk();
+            var diffX = target.position.x - transform.position.x;
+            UpdateFacing(diffX);
+
+            if (IsTargetInRange())
+            {
+                rb.linearVelocityX = 0f;
+                if (CanAtk()) Attack();
+            }
+            else
+            {
+                var dirX = Mathf.Abs(diffX) < 1f ? diffX : Mathf.Sign(diffX);
+                rb.linearVelocityX = dirX * moveSpeed;
+            }
         }
-        else
+
+        protected override void Attack()
         {
-            float dirX = Mathf.Sign(diffX);
-            rb.linearVelocityX = dirX * moveSpeed;
+            ResetAtkDelay();
+
+            // TODO animator.SetTrigger("Attack");
+            var hitColliders = Physics2D.OverlapBox(attackPoint.transform.position, attackPoint.size, 0f, LayerMask.GetMask("Player"));
+            if (!hitColliders) return;
+            /* TODO var playerHealth = Player.Instance.playerHealth;
+            if (playerHealth != null) playerHealth.TakeDamage(_damage);*/
         }
-    }
 
-    protected override void Atk()
-    {
-        ResetAtkDelay();
+        private void UpdateFacing(float diffX)
+        {
+            _facingRight = diffX switch
+            {
+                > 0.05f => false,
+                < -0.05f => true,
+                _ => _facingRight
+            };
 
-        //TODO animator.SetTrigger("Attack");
-        EnableAttackHitbox();
-        Invoke(nameof(DisableAttackHitbox), 0.12f);
-    }
-    
-    public void EnableAttackHitbox()
-    {
-        attackHitbox.transform.position = attackPoint.position;
-        attackHitbox.Activate(atkPower);
-    }
-
-    public void DisableAttackHitbox()
-    {
-        attackHitbox.Deactivate();
-    }
-    
-    private void UpdateFacing(float diffX)
-    {
-        if (diffX > 0.05f)
-            _facingRight = false;
-        else if (diffX < -0.05f)
-            _facingRight = true;
-
-        Vector3 scale = transform.localScale;
-        scale.x = Mathf.Abs(scale.x) * (_facingRight ? 1f : -1f);
-        transform.localScale = scale;
+            var scale = transform.localScale;
+            scale.x = Mathf.Abs(scale.x) * (_facingRight ? 1f : -1f);
+            transform.localScale = scale;
+        }
     }
 }

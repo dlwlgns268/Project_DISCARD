@@ -1,42 +1,43 @@
 using UnityEngine;
 
-public class VernTurret : RangedEnemy
+namespace GameLogic.Entity.Enemy
 {
-    private bool _facingRight = true;
-
-    protected override void FixedUpdate()
+    public class VernTurret : RangedEnemy
     {
-        base.FixedUpdate();
-        
-        if (!isSpawned || !Target)
-            return;
-        
-        float diffX = Target.position.x - transform.position.x;
-        UpdateFacing(diffX);
+        private bool _facingRight = true;
 
-        if (IsTargetInRange() && CanAtk())
+        protected override void FixedUpdate()
         {
-            Atk();
-        }
-    }
-
-    private void Atk()
-    {
-        ResetAttackDelay();
+            base.FixedUpdate();
         
-        //TODO 얘도 공격 모션이나 연출 넣기
-        FireProjectile();
-    }
-    
-    private void UpdateFacing(float diffX)
-    {
-        if (diffX > 0.05f)
-            _facingRight = true;
-        else if (diffX < -0.05f)
-            _facingRight = false;
+            if (!isSpawned || !target) return;
+        
+            var diffX = target.position.x - transform.position.x;
+            UpdateFacing(diffX);
 
-        Vector3 scale = transform.localScale;
-        scale.x = Mathf.Abs(scale.x) * (_facingRight ? 1f : -1f);
-        transform.localScale = scale;
+            if (IsTargetInRange() && CanAttack) Attack();
+        }
+
+        private void Attack()
+        {
+            ResetAttackDelay();
+        
+            //TODO 얘도 공격 모션이나 연출 넣기
+            FireProjectile();
+        }
+    
+        private void UpdateFacing(float diffX)
+        {
+            _facingRight = diffX switch
+            {
+                > 0.05f => true,
+                < -0.05f => false,
+                _ => _facingRight
+            };
+
+            var scale = transform.localScale;
+            scale.x = Mathf.Abs(scale.x) * (_facingRight ? 1f : -1f);
+            transform.localScale = scale;
+        }
     }
 }

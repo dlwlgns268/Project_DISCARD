@@ -283,7 +283,7 @@ Rigidbody2D:
     m_Bits: 0
   m_Interpolate: 0
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 4
 --- !u!114 &208749655
 MonoBehaviour:
@@ -405,11 +405,8 @@ MonoBehaviour:
   dashHitbox: {fileID: 80802065}
   targetIndicator: {fileID: 1430760734}
   playerOutlineMaterial: {fileID: 2100000, guid: b7651b2bc57d70e4f91f2d322a33b1f8, type: 2}
-  strongDashColor: {r: 55.61988, g: 2.0384247, b: 2.0384247, a: 1}
-  normalDashColor: {r: 0.7005363, g: 0.7005363, b: 0.7005363, a: 1}
   strongDashForce: 37.5
   strongDashDuration: 0.2
-  strongDashChargeTime: 3
 --- !u!114 &208749661
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -422,6 +419,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4891cbf4fd9f26b419ce88efb75fc4e5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Player
+  destroyOnLoad: 1
   execution: {fileID: 208749663}
   selfCollider: {fileID: 208749666}
   playerDash: {fileID: 208749660}
@@ -633,7 +631,7 @@ MonoBehaviour:
   atkPower: 20
   moveSpeed: 0
   executionThreshold: 0.5
-  CurrentEnemyHp: 0
+  currentEnemyHp: 0
   isSpawned: 1
   attackRange: 15
   attackDelay: 2.25
@@ -723,26 +721,13 @@ GameObject:
   m_Component:
   - component: {fileID: 602720114}
   - component: {fileID: 602720113}
-  - component: {fileID: 602720112}
   m_Layer: 6
-  m_Name: GameObject
+  m_Name: Hitbox
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &602720112
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 602720111}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4278de14a6ea5e74697a26e762c44866, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EnemyAttackHitbox
 --- !u!61 &602720113
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -773,7 +758,7 @@ BoxCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
@@ -798,7 +783,7 @@ Transform:
   m_GameObject: {fileID: 602720111}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.7, y: -0.1, z: 0}
+  m_LocalPosition: {x: -0.7, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1182,7 +1167,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1438892454}
-  - component: {fileID: 1438892453}
+  - component: {fileID: 1438892455}
   m_Layer: 0
   m_Name: PoolManager
   m_TagString: Untagged
@@ -1190,18 +1175,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1438892453
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1438892452}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fcaff72d822713b468e221fefd18ca2e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ObjectPoolManager
 --- !u!4 &1438892454
 Transform:
   m_ObjectHideFlags: 0
@@ -1217,6 +1190,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1438892455
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1438892452}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fcaff72d822713b468e221fefd18ca2e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Utils.ObjectPooling.ObjectPoolManager
+  destroyOnLoad: 1
 --- !u!1 &1637635172
 GameObject:
   m_ObjectHideFlags: 0
@@ -1538,13 +1524,12 @@ MonoBehaviour:
   atkPower: 10
   moveSpeed: 9
   executionThreshold: 0.5
-  CurrentEnemyHp: 0
+  currentEnemyHp: 0
   isSpawned: 0
   atkRange: 1.5
   atkDelay: 1
   rb: {fileID: 1947648679}
-  attackHitbox: {fileID: 602720112}
-  attackPoint: {fileID: 602720114}
+  attackPoint: {fileID: 602720113}
 --- !u!1 &1979494904
 GameObject:
   m_ObjectHideFlags: 0
@@ -1654,7 +1639,7 @@ MonoBehaviour:
   atkPower: 10
   moveSpeed: 15
   executionThreshold: 0.5
-  CurrentEnemyHp: 0
+  currentEnemyHp: 0
   isSpawned: 1
   attackRange: 8
   attackDelay: 1.75

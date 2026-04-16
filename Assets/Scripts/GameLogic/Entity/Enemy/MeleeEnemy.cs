@@ -1,33 +1,36 @@
 using UnityEngine;
 
-public abstract class MeleeEnemy : Enemy
+namespace GameLogic.Entity.Enemy
 {
-    [SerializeField] protected float atkRange = 1.5f;
-    [SerializeField] protected float atkDelay = 1f;
+    public abstract class MeleeEnemy : Enemy
+    {
+        [SerializeField] protected float atkRange = 1.5f;
+        [SerializeField] protected float atkDelay = 1f;
     
-    protected float CurrentAtkDelay;
+        protected float CurrentAtkDelay;
 
-    protected virtual void FixedUpdate()
-    {
-        if(CurrentAtkDelay > 0f)
-            CurrentAtkDelay -= Time.fixedDeltaTime;
-    }
+        protected virtual void FixedUpdate()
+        {
+            if(CurrentAtkDelay > 0f)
+                CurrentAtkDelay -= Time.fixedDeltaTime;
+        }
     
-    protected bool CanAtk()
-    {
-        return CurrentAtkDelay <= 0f;
-    }
+        protected bool CanAtk()
+        {
+            return CurrentAtkDelay <= 0f;
+        }
 
-    protected bool IsTargetInRange()
-    {
-        if (!Target) return false;
-        return Vector2.Distance(transform.position, Target.position) <= atkRange;
-    }
+        protected bool IsTargetInRange()
+        {
+            if (!target) return false;
+            return Vector2.Distance(transform.position, target.position) <= atkRange;
+        }
 
-    protected void ResetAtkDelay()
-    {
-        CurrentAtkDelay = atkDelay;
-    }
+        protected void ResetAtkDelay()
+        {
+            CurrentAtkDelay = atkDelay;
+        }
 
-    protected abstract void Atk();
+        protected abstract void Attack();
+    }
 }

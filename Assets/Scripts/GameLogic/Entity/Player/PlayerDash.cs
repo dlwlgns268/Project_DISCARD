@@ -13,7 +13,6 @@ namespace GameLogic.Entity.Player
 
         [SerializeField] private float strongDashForce = 37.5f;
         [SerializeField] private float strongDashDuration = 0.2f;
-        [SerializeField] private float strongDashChargeTime = 3f;
 
         private const float DashForce = 37.5f;
         private const float DashDuration = 0.2f;
@@ -129,14 +128,14 @@ namespace GameLogic.Entity.Player
             IsDashing = false;
         }
 
-        private Enemy[] GetNearestNonExecutionTarget()
+        private Enemy.Enemy[] GetNearestNonExecutionTarget()
         {
             var moveInput = Player.Instance.playerInputManager.MoveInput;
             var direction = Mathf.Abs(moveInput.magnitude) > 0.01f
                 ? moveInput.normalized
                 : new Vector2(Player.Instance.spriteRenderer.flipX ? -1f : 1f, 0);
 
-            var e = FindObjectsByType<Enemy>(FindObjectsSortMode.None);
+            var e = FindObjectsByType<Enemy.Enemy>(FindObjectsSortMode.None);
             return e.Where(x => !x.IsExecutable)
                 .Where(x =>
                 {
