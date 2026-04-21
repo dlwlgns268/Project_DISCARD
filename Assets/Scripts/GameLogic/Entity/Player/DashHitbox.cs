@@ -1,30 +1,30 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class StrongDashHitbox : MonoBehaviour
+namespace GameLogic.Entity.Player
 {
-    private const float Damage = 60f;
-    private readonly HashSet<Enemy> _hitTargets = new();
-
-    public void ResetHitTargets()
+    [RequireComponent(typeof(Collider2D))]
+    public class DashHitbox : MonoBehaviour
     {
-        _hitTargets.Clear();
-    }
+        private const float Damage = 60f;
+        private readonly HashSet<Enemy.Enemy> _hitTargets = new();
+        public Collider2D selfCollider;
+        public bool IsStrongDash { get; set; }
 
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-        Enemy enemy = other.GetComponentInParent<Enemy>();
-        if (!enemy)
+        public void ResetHitTargets()
         {
-            return;
+            _hitTargets.Clear();
         }
 
-        if (_hitTargets.Contains(enemy))
+        private void OnTriggerEnter2D(Collider2D other)
         {
-            return;
+            var enemy = other.GetComponentInParent<Enemy.Enemy>();
+            if (!enemy) return;
+            Player.Instance.playerDash.IsDashAvailable = true;
+            if (!_hitTargets.Add(enemy)) return;
+            Player.Instance.playerDash.StrongDashCount++;
+            if (!IsStrongDash || enemy.IsExecutable) return;
+            enemy.TakeDamage(Damage);
         }
-
-        _hitTargets.Add(enemy);
-        enemy.TakeDamage(Damage);
     }
 }

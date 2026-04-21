@@ -978,8 +978,8 @@
     ],
     "m_VertexContext": {
         "m_Position": {
-            "x": 307.00006103515627,
-            "y": 1982.0001220703125
+            "x": 235.00003051757813,
+            "y": 1957.9998779296875
         },
         "m_Blocks": [
             {
@@ -995,8 +995,8 @@
     },
     "m_FragmentContext": {
         "m_Position": {
-            "x": 307.00006103515627,
-            "y": 2182.0
+            "x": 235.00003051757813,
+            "y": 2128.999755859375
         },
         "m_Blocks": [
             {
@@ -1656,7 +1656,7 @@
     "m_PerRendererData": false,
     "m_customAttributes": [],
     "m_Value": 1.0,
-    "m_FloatType": 0,
+    "m_FloatType": 1,
     "m_LiteralFloatMode": false,
     "m_RangeValues": {
         "x": 0.0,
@@ -4783,7 +4783,7 @@
     "m_RefNameGeneratedByDisplayName": "MainTex",
     "m_DefaultReferenceName": "_MainTex",
     "m_OverrideReferenceName": "",
-    "m_GeneratePropertyBlock": true,
+    "m_GeneratePropertyBlock": false,
     "m_UseCustomSlotLabel": false,
     "m_CustomSlotLabel": "",
     "m_DismissedVersion": 0,
@@ -7543,9 +7543,9 @@
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": 189.99989318847657,
-            "y": 2302.0,
-            "width": 105.00004577636719,
+            "x": 129.99998474121095,
+            "y": 2238.0,
+            "width": 105.00003051757813,
             "height": 34.0
         }
     },

@@ -1,58 +1,45 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ObjectPoolManager : MonoBehaviour
+namespace Utils.ObjectPooling
 {
-    public static ObjectPoolManager Instance { get; private set; }
-
-    private readonly Dictionary<IPoolable, ObjectPool> _pools = new();
-    private readonly Dictionary<string, IPoolable> _registeredPrefabs = new();
-
-    private Transform _poolRoot;
-
-    private void Awake()
+    public class ObjectPoolManager : SingleMono<ObjectPoolManager>
     {
-        if (Instance != null && Instance != this)
+        private readonly Dictionary<Poolable, ObjectPool> _pools = new();
+        private readonly Dictionary<string, Poolable> _registeredPrefabs = new();
+
+        private Transform _poolRoot;
+
+        public override void Awake()
         {
-            Destroy(gameObject);
-            return;
+            base.Awake();
+            _poolRoot = new GameObject("PoolRoot").transform;
+            _poolRoot.SetParent(transform);
         }
 
-        Instance = this;
-
-        _poolRoot = new GameObject("PoolRoot").transform;
-        _poolRoot.SetParent(transform);
-    }
-
-    public void Register(IPoolable prefab, int initialSize)
-    {
-        if (_pools.ContainsKey(prefab))
-            return;
-
-        GameObject poolGroup = new GameObject(prefab.name + "_Pool");
-        poolGroup.transform.SetParent(_poolRoot);
-
-        ObjectPool pool = new ObjectPool(prefab, poolGroup.transform, initialSize);
-        _pools.Add(prefab, pool);
-        _registeredPrefabs.Add(prefab.name, prefab);
-    }
-
-    public T Spawn<T>(IPoolable prefab, Vector3 position, Quaternion rotation) where T : IPoolable
-    {
-        if (!_pools.TryGetValue(prefab, out ObjectPool pool))
+        private ObjectPool Register(Poolable prefab, int initialSize)
         {
-            Register(prefab, 1);
-            pool = _pools[prefab];
+            if (_pools.TryGetValue(prefab, out var pool)) return pool;
+            
+            var poolGroup = new GameObject(prefab.name + "_Pool");
+            poolGroup.transform.SetParent(_poolRoot);
+            pool = new ObjectPool(prefab, poolGroup.transform, initialSize);
+            _pools[prefab] = pool;
+            _registeredPrefabs[prefab.name] = prefab;
+            return pool;
         }
 
-        return pool.Get<T>(position, rotation);
-    }
+        public T Spawn<T>(T prefab, Vector3 position, Quaternion rotation) where T : Poolable
+        {
+            if (_pools.TryGetValue(prefab, out var pool)) return pool.Get(position, rotation) as T;
+            pool = Register(prefab, 1);
 
-    public T Spawn<T>(string prefabName, Vector3 position, Quaternion rotation) where T : IPoolable
-    {
-        if (!_registeredPrefabs.TryGetValue(prefabName, out IPoolable prefab))
-            return null;
+            return pool.Get(position, rotation) as T;
+        }
 
-        return Spawn<T>(prefab, position, rotation);
+        public T Spawn<T>(string prefabName, Vector3 position, Quaternion rotation) where T : Poolable
+        {
+            return !_registeredPrefabs.TryGetValue(prefabName, out var prefab) ? null : Spawn(prefab as T, position, rotation);
+        }
     }
 }

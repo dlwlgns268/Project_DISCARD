@@ -1,48 +1,40 @@
 using UnityEngine;
+using Utils.ObjectPooling;
 
-public abstract class RangedEnemy : Enemy
+namespace GameLogic.Entity.Enemy
 {
-    [SerializeField] protected float attackRange = 12f;
-    [SerializeField] protected float attackDelay = 2f;
-    [SerializeField] protected Transform firePoint;
-    [SerializeField] protected EnemyProjectile projectilePrefab;
-
-    protected float CurrentAttackDelay;
-
-    protected virtual void FixedUpdate()
+    public abstract class RangedEnemy : Enemy
     {
-        if (CurrentAttackDelay > 0f)
-            CurrentAttackDelay -= Time.fixedDeltaTime;
-    }
+        [SerializeField] protected float attackRange = 12f;
+        [SerializeField] protected float attackDelay = 2f;
+        [SerializeField] protected Transform firePoint;
+        [SerializeField] protected EnemyProjectile projectilePrefab;
 
-    protected bool CanAtk()
-    {
-        return CurrentAttackDelay <= 0f;
-    }
+        protected float currentAttackDelay;
 
-    protected bool IsTargetInRange()
-    {
-        if (!Target) return false;
-        return Vector2.Distance(transform.position, Target.position) <= attackRange;
-    }
+        protected virtual void FixedUpdate()
+        {
+            if (currentAttackDelay > 0f) currentAttackDelay -= Time.fixedDeltaTime;
+        }
 
-    protected void ResetAttackDelay()
-    {
-        CurrentAttackDelay = attackDelay;
-    }
+        protected bool CanAttack => currentAttackDelay <= 0f;
 
-    protected virtual void FireProjectile()
-    {
-        if (!projectilePrefab || !firePoint || !Target)
-            return;
+        protected bool IsTargetInRange()
+        {
+            if (!target) return false;
+            return Vector2.Distance(transform.position, target.position) <= attackRange;
+        }
 
-        EnemyProjectile projectile = ObjectPoolManager.Instance.Spawn<EnemyProjectile>(
-            projectilePrefab,
-            firePoint.position,
-            Quaternion.identity
-        );
+        protected void ResetAttackDelay()
+        {
+            currentAttackDelay = attackDelay;
+        }
 
-        projectile.Initialize(Target.position - firePoint.position, atkPower);
+        protected virtual void FireProjectile()
+        {
+            if (!projectilePrefab || !firePoint || !target) return;
+            var projectile = ObjectPoolManager.Instance.Spawn(projectilePrefab, firePoint.position, Quaternion.identity);
+            projectile.Initialize(target.position - firePoint.position, atkPower);
+        }
     }
 }
-
