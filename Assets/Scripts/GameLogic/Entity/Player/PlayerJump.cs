@@ -8,7 +8,7 @@ namespace GameLogic.Entity.Player
 
         public bool IsGrounded { get; private set; }
 
-        private const float JumpForce = 15f;
+        private const float JumpForce = 25f;
         private static readonly Vector2 GroundCheckBoxSize = new(0.5f, 0.1f);
 
         private void Update()
