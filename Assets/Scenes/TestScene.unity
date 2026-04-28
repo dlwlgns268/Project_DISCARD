@@ -164,7 +164,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: da2a91dd10c32a34eac2b53fd368996d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StrongDashHitbox
-  selfCollider: {fileID: 80802066}
+  selfCollider: {fileID: 0}
 --- !u!58 &80802066
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -402,9 +402,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ee540f6d35e505c44afb2d8970873ff8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Dash
-  dashHitbox: {fileID: 80802065}
-  targetIndicator: {fileID: 1430760734}
-  playerOutlineMaterial: {fileID: 2100000, guid: b7651b2bc57d70e4f91f2d322a33b1f8, type: 2}
+  dashHitbox: {fileID: 0}
+  targetIndicator: {fileID: 0}
+  playerOutlineMaterial: {fileID: 0}
   strongDashForce: 37.5
   strongDashDuration: 0.2
 --- !u!114 &208749661
@@ -420,14 +420,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Player
   destroyOnLoad: 1
-  execution: {fileID: 208749663}
-  selfCollider: {fileID: 208749666}
-  playerDash: {fileID: 208749660}
-  playerMove: {fileID: 208749655}
-  playerJump: {fileID: 208749659}
-  rb: {fileID: 208749654}
-  spriteRenderer: {fileID: 208749657}
-  playerInputManager: {fileID: 208749665}
+  execution: {fileID: 0}
+  selfCollider: {fileID: 0}
+  playerDash: {fileID: 0}
+  playerMove: {fileID: 0}
+  playerJump: {fileID: 0}
+  rb: {fileID: 0}
+  spriteRenderer: {fileID: 0}
+  playerInputManager: {fileID: 0}
 --- !u!95 &208749662
 Animator:
   serializedVersion: 7
