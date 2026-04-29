@@ -4,6 +4,7 @@ namespace GameLogic.Entity.Player
 {
     public class PlayerMove : MonoBehaviour
     {
+        private static readonly int IsMoving = Animator.StringToHash("IsMoving");
         [SerializeField] private float moveSpeed = 7f;
     
         private void FixedUpdate()
@@ -12,6 +13,7 @@ namespace GameLogic.Entity.Player
             if (playerDash && playerDash.IsDashing) return;
             
             var input = Player.Instance.playerInputManager.MoveInput;
+            Player.Instance.animator.SetBool(IsMoving, input.magnitude > 0f);
             Player.Instance.rb.linearVelocityX = input.x * moveSpeed;
 
             var spriteRenderer = Player.Instance.spriteRenderer;

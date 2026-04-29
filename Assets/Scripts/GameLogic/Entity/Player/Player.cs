@@ -6,7 +6,7 @@ namespace GameLogic.Entity.Player
     [DisallowMultipleComponent]
     [RequireComponent(typeof(Execution), typeof(Collider2D), typeof(PlayerDash))]
     [RequireComponent(typeof(PlayerMove), typeof(PlayerJump), typeof(Rigidbody2D))]
-    [RequireComponent(typeof(SpriteRenderer), typeof(PlayerInputManager))]
+    [RequireComponent(typeof(SpriteRenderer), typeof(PlayerInputManager), typeof(Animator))]
     public class Player : SingleMono<Player>
     {
         public Execution execution;
@@ -17,6 +17,7 @@ namespace GameLogic.Entity.Player
         public Rigidbody2D rb;
         public SpriteRenderer spriteRenderer;
         public PlayerInputManager playerInputManager;
+        public Animator animator;
         
         [ContextMenu("Collect All Required Components")]
         public void CollectAllRequiredComponents()
@@ -29,6 +30,7 @@ namespace GameLogic.Entity.Player
             rb = GetComponent<Rigidbody2D>();
             spriteRenderer = GetComponent<SpriteRenderer>();
             playerInputManager = GetComponent<PlayerInputManager>();
+            animator = GetComponent<Animator>();
         }
     }
 }

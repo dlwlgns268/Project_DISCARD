@@ -10,10 +10,12 @@ namespace GameLogic.Entity.Player
 
         private const float JumpForce = 25f;
         private static readonly Vector2 GroundCheckBoxSize = new(0.5f, 0.1f);
+        private static readonly int Airborne = Animator.StringToHash("Airborne");
 
         private void Update()
         {
             IsGrounded = Physics2D.OverlapBox(transform.position, GroundCheckBoxSize, 0f, groundLayer);
+            Player.Instance.animator.SetBool(Airborne, !IsGrounded);
         }
 
         private void FixedUpdate()
